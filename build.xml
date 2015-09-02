@@ -1,0 +1,54 @@
+<project basedir=".">
+	<property name="src" value="src/**.java"/>
+	<property name="build" value="bin/main/java/classes"/>
+	<property name="lib" value="war/WEB-INF/lib"/>
+	<property name="c_lib" value="."/>
+	<property name="junit_lib" value="${eclipse.home}/plugins/"/>
+	<property name="appengine_sdk_shared_lib" value="/Applications/Eclipse.app/Contents/Eclipse/plugins" />
+	
+	<path id="classpath">
+	  <!-- <fileset dir="war/WEB-INF/lib" includes="**/*.jar" /> -->
+	  <fileset dir="${c_lib}" includes="**/*.jar" />
+	  <fileset dir="${junit_lib}" includes="org.junit_**/*.jar" />
+      <fileset dir="${appengine_sdk_shared_lib}" includes="com.google.appengine.eclipse.sdkbundle_1.9.25/appengine-java-sdk-1.9.25/lib/shared**/*.jar" />
+	</path>	
+	
+	<target name="eclipse-test-runner" depends="compile">
+		<junit printsummary="false" haltonfailure="no" showoutput="false">
+		  <classpath>
+		      <pathelement path="${classpath}"/>
+		  	  <fileset dir="${c_lib}" includes="**/*.jar" />
+			  <fileset dir="${junit_lib}">
+			  	<include name="org.junit_**/*.jar"/>
+			  	<include name="/com.google.appengine.eclipse.sdkbundle_1.9.25/appengine-java-sdk-1.9.25/lib/shared/**/*.jar" />
+			  </fileset>
+		      <pathelement location="${build}"/>
+		  </classpath>
+
+		  <batchtest fork="yes">
+		  	<formatter type="plain" usefile="false"/>
+		    <fileset dir="src">
+		      <include name="**/*Steps.java"/>
+		      <exclude name="**/AllTests.java"/>
+		    </fileset>
+		  </batchtest>
+		</junit>
+	</target>
+	
+	<target name="compile"
+	      description="Compiles Java source and copies other source files to the WAR.">
+	    <mkdir dir="${build}" />
+	    <javac
+	        srcdir="src"
+	        destdir="${build}"
+	        classpathref="classpath"
+	    	includeantruntime="false"
+	        />
+	</target>
+	
+	<target name="clean">
+        <delete dir="${build}"/>
+    </target>
+	
+	<echo message="${eclipse.home}" />
+</project>
